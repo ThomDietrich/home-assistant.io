@@ -28,19 +28,19 @@ The following statistical characteristics are provided for the collected source 
 
 | Identifier | Description |
 | ---------- | ----------- |
-| `count` | The number of source sensor readings stored. This number is limited by `sampling_size` and can be low within the bounds of `max_age`.
-| `total` | The sum of all source sensor measurements stored.
-| `mean` | The average value computed for all measurements stored. Be aware that this does not take into account uneven time steps.
-| `median` | The [median](https://en.wikipedia.org/wiki/Mode_(statistics)#Comparison_of_mean,_median_and_mode) value computed for all measurements stored.
-| `standard_deviation` | The [standard deviation](https://en.wikipedia.org/wiki/Standard_deviation) of an assumed normal distribution of all stored measurements. 
-| `variance` | The [variance](https://en.wikipedia.org/wiki/Standard_deviation) of an assumed normal distribution. 
-| `min_value` | 
-| `max_value` | 
-| `min_age` | 
-| `max_age` | 
-| `change` | 
-| `average_change` | 
-| `change_rate` | 
+| `count` | The number of stored source sensor readings. This number is limited by `sampling_size` and can be low within the bounds of `max_age`.
+| `total` | The sum of all source sensor measurements within the given time and sampling size limits.
+| `mean` | The average value computed for all measurements. Be aware that this does not take into account uneven time periods.
+| `median` | The [median](https://en.wikipedia.org/wiki/Mode_(statistics)#Comparison_of_mean,_median_and_mode) value computed for all measurements.
+| `standard_deviation` | The [standard deviation](https://en.wikipedia.org/wiki/Standard_deviation) of an assumed normal distribution from all measurements. 
+| `variance` | The [variance](https://en.wikipedia.org/wiki/Standard_deviation) of an assumed normal distribution from all measurements.
+| `min_value` | The smallest value within the number of measurements.
+| `max_value` | The biggest value within the number of measurements.
+| `min_age` | The timestamp of the oldest measurement stored.
+| `max_age` | The timestamp of the newest measurement stored.
+| `change` | The difference between the oldest and newest measurement stored.
+| `average_change` | The difference between the oldest and newest measurement stored, divided by the number of in-between measurements.
+| `change_rate` | The difference between the oldest and newest measurement stored, divided by seconds between them.
 
 
 ## Configuration
@@ -48,13 +48,13 @@ The following statistical characteristics are provided for the collected source 
 To enable the statistics sensor, add the following lines to your `configuration.yaml`:
 
 ```yaml
-# enable the recorder integration (optional)
-recorder:
-
-# Example configuration.yaml entry
 sensor:
   - platform: statistics
-    entity_id: sensor.cpu
+    name: Bathroom humidity change over 5 minutes
+    entity_id: sensor.bathroom_humidity
+    max_age:
+      minutes: 5
+    state_characteristic: change
   - platform: statistics
     entity_id: binary_sensor.movement
     max_age:
@@ -72,7 +72,7 @@ name:
   default: Stats
   type: string
 state_characteristic:
-  description: The characteristic that should be used as the state of the statistics sensor. All characteristics are provided as attributes.
+  description: The characteristic that should be used as the state of the statistics sensor. All other characteristics are provided as attributes.
   required: false
   default: mean
   type: string
@@ -86,7 +86,7 @@ max_age:
   required: false
   type: time
 precision:
-  description: Defines the precision of the calculated values, through the argument of round().
+  description: Defines the number of decimal places of the calculated values.
   required: false
   default: 2
   type: integer
